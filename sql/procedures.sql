@@ -56,8 +56,11 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE updateSalary(in usersFkP int,in salaryP double)
 BEGIN
-	
-	update months set salary = salaryP, totalPeriod1 = (salaryP/2), totalPeriod2 = (salaryP/2) where usersFk = usersFkP;
+
+	declare monthId default 0;
+
+	set monthId = (select id from months where usersFk = usersFkP and start = DATE_FORMAT(now() - interval (day(now())-1) day,'%Y-%m-%d') and end = last_day(curdate()));
+	update months set salary = salaryP, totalPeriod1 = (salaryP/2), totalPeriod2 = (salaryP/2) where id = monthId;
     
 END//
 DELIMITER ;
@@ -66,25 +69,25 @@ DELIMITER //
 CREATE PROCEDURE calculeExpenditures(in usersFkP int)
 BEGIN
 	
-    declare totalServices double default 0;
-    declare totalServicesDiv double default 0;
-    declare enableMoney double default 0;
-    declare monthId int default 0;
+  declare totalServices double default 0;
+  declare totalServicesDiv double default 0;
+  declare enableMoney double default 0;
+  declare monthId int default 0;
     
-    set monthId = (select id from months where usersFk = usersFkP and start = DATE_FORMAT(now() - interval (day(now())-1) day,'%Y-%m-%d') and end = last_day(curdate()));
+  set monthId = (select id from months where usersFk = usersFkP and start = DATE_FORMAT(now() - interval (day(now())-1) day,'%Y-%m-%d') and end = last_day(curdate()));
     
-    set totalServices = (select round(sum(expenditureMonth)) from expendituremonth where monthsFk =  2 and monthPay = -1);
-    set totalServices = totalServices + (select round(sum(expenditureMonth)) from expendituremonth where monthsFk = monthId and monthPay = -2 and expenditureDate < CONCAT(DATE_FORMAT(now(),'%Y-%m-'),'',20) and expendituremonth.expenditureDate > concat(DATE_FORMAT(now() - interval (day(now()) + 1) day,'%Y-%m-'),'','20'));
-    set totalServices = totalServices + (select sum(expenditureMonth) from expendituremonth where monthsFk = monthId and monthPay > 1 and expenditureDate < CONCAT(DATE_FORMAT(now(),'%Y-%m-'),'',20) and expendituremonth.expenditureDate > concat(DATE_FORMAT(now() - interval (day(now()) + 1) day,'%Y-%m-'),'','20'));
-    set totalServicesDiv = round(totalServices / 2);
+  set totalServices = (select round(sum(expenditureMonth)) from expendituremonth where monthsFk =  2 and monthPay = -1);
+  set totalServices = totalServices + (select round(sum(expenditureMonth)) from expendituremonth where monthsFk = monthId and monthPay = -2 and expenditureDate < CONCAT(DATE_FORMAT(now(),'%Y-%m-'),'',20) and expendituremonth.expenditureDate > concat(DATE_FORMAT(now() - interval (day(now()) + 1) day,'%Y-%m-'),'','20'));
+  set totalServices = totalServices + (select sum(expenditureMonth) from expendituremonth where monthsFk = monthId and monthPay > 1 and expenditureDate < CONCAT(DATE_FORMAT(now(),'%Y-%m-'),'',20) and expendituremonth.expenditureDate > concat(DATE_FORMAT(now() - interval (day(now()) + 1) day,'%Y-%m-'),'','20'));
+  set totalServicesDiv = round(totalServices / 2);
     
-    set enableMoney = (select salary from months where id = monthId) / 2;
+  set enableMoney = (select salary from months where id = monthId) / 2;
 	set enableMoney = enableMoney - totalServicesDiv;
 
 	/*se cargan los pagos mensuales permanentes*/
 	update months set totalPay = totalServices, totalPayPeriod1 = totalServicesDiv, totalPayPeriod2 = totalServicesDiv,
-					  enableMoneyPeriod1 = enableMoney, enableMoneyPeriod2 = enableMoney where id = monthId;
-    /*=========================================*/
+	enableMoneyPeriod1 = enableMoney, enableMoneyPeriod2 = enableMoney where id = monthId;
+  /*=========================================*/
     
 END//
 DELIMITER ;
@@ -93,63 +96,74 @@ DELIMITER ;
 
 
 DELIMITER //
-CREATE PROCEDURE registerExpenditure(in usersFkP int,in expenditureNameP varchar(300),in expenditureP double,in monthPayP double)
+CREATE PROCEDURE registerExpenditure(in usersFkP int,in expenditureNameP varchar(300),in expenditureP double,in monthPayP double,out resp int)
 BEGIN
 	
-    declare periodV int default 0;
-    declare idMonth int default 0;
-    declare money double default 0;
-    declare money2 double default 0;
+	set resp = -3;
+  declare periodV int default 0;
+  declare idMonth int default 0;
+  declare money double default 0;
+  declare money2 double default 0;
     
-    if DATE_FORMAT(now(),'%Y-%m-%d') <= concat(DATE_FORMAT(now(),'%Y-%m-'),'','15') then 
+  if DATE_FORMAT(now(),'%Y-%m-%d') <= concat(DATE_FORMAT(now(),'%Y-%m-'),'','15') then 
 		set periodV = 1;
-    elseif DATE_FORMAT(now(),'%Y-%m-%d') > concat(DATE_FORMAT(now(),'%Y-%m-'),'','15') and DATE_FORMAT(now(),'%Y-%m-%d') <= DATE_FORMAT(last_day(curdate()),'%Y-%m-%d') then 
+  elseif DATE_FORMAT(now(),'%Y-%m-%d') > concat(DATE_FORMAT(now(),'%Y-%m-'),'','15') and DATE_FORMAT(now(),'%Y-%m-%d') <= DATE_FORMAT(last_day(curdate()),'%Y-%m-%d') then 
 		set periodV = 2;
-    END IF;
+  END IF;
 	
-    set idMonth = (select id from months where usersFk = usersFkP and start = DATE_FORMAT(now() - interval (day(now())-1) day,'%Y-%m-%d') and end = last_day(curdate()));
+  set idMonth = (select id from months where usersFk = usersFkP and start = DATE_FORMAT(now() - interval (day(now())-1) day,'%Y-%m-%d') and end = last_day(curdate()));
     
-    if monthPayP = 1 then 
+  if monthPayP = 1 then 
     
 		insert into expendituremonth(expenditureName,period,expenditure,expenditureMonth,expenditureMonthPayed,monthPay,monthPayed,expenditureDate,monthsFk) 
-						values(expenditureNameP,periodV,expenditureP,expenditureP,expenditureP,1,1,now(),idMonth);
-		
+		values(expenditureNameP,periodV,expenditureP,expenditureP,expenditureP,1,1,now(),idMonth);
+			
 		if periodV = 2 then 
 			set money = (select enableMoneyPeriod1 from months where id = idMonth);
-            set money2 = (select totalPayPeriod2 from months where id = idMonth);
+			set money2 = (select totalPayPeriod2 from months where id = idMonth);
 			update months set enableMoneyPeriod1 = (money - expenditureP), totalPayPeriod2 = (money2 + expenditureP) where id = idMonth;
-        end if;
-        
-    elseif monthPayP = 0 then 
+		end if;
+    
+		set resp = 1;
+
+  elseif monthPayP = 0 then 
     
 		insert into expendituremonth(expenditureName,period,expenditure,expenditureMonth,expenditureMonthPayed,monthPay,monthPayed,expenditureDate,monthsFk) 
-						values(expenditureNameP,periodV,expenditureP,expenditureP,expenditureP,0,0,now(),idMonth);
-    
-		if periodV = 1 then 
+		values(expenditureNameP,periodV,expenditureP,expenditureP,expenditureP,0,0,now(),idMonth);
+			
+		if periodV = 1 then
 			set money = (select enableMoneyPeriod1 from months where id = idMonth);
 			update months set enableMoneyPeriod1 = money - expenditureP where id = idMonth;
-        end if; 
-        
-        if periodV = 2 then 
+		end if; 
+					
+		if periodV = 2 then 
 			set money = (select enableMoneyPeriod2 from months where id = idMonth);
 			update months set enableMoneyPeriod2 = money - expenditureP where id = idMonth;
-        end if;
-        
-    elseif monthPayP = -1 then
+		end if;
+
+		set resp = 0;    
+		
+  elseif monthPayP = -1 then
     
 		insert into expendituremonth(expenditureName,period,expenditure,expenditureMonth,expenditureMonthPayed,monthPay,expenditureDate,monthsFk) 
-						values(expenditureNameP,periodV,expenditureP,expenditureP,0,monthPayP,now(),idMonth);
-                        
-    elseif monthPayP = -2 then
+		values(expenditureNameP,periodV,expenditureP,expenditureP,0,monthPayP,now(),idMonth);
+
+		set resp = -1;
+
+  elseif monthPayP = -2 then
     
 		insert into expendituremonth(expenditureName,period,expenditure,expenditureMonth,expenditureMonthPayed,monthPay,expenditureDate,monthsFk) 
-						values(expenditureNameP,periodV,expenditureP,expenditureP,0,monthPayP,now(),idMonth);
-                        
+		values(expenditureNameP,periodV,expenditureP,expenditureP,0,monthPayP,now(),idMonth);
+
+		set resp = -2;
+
 	else 
     
 		insert into expendituremonth(expenditureName,period,expenditure,expenditureMonth,expenditureMonthPayed,monthPay,expenditureDate,monthsFk) 
-						values(expenditureNameP,periodV,expenditureP,(expenditureP/monthPayP),0,monthPayP,now(),idMonth);
-                        
+		values(expenditureNameP,periodV,expenditureP,(expenditureP/monthPayP),0,monthPayP,now(),idMonth);
+
+		set resp = monthPay;
+
 	end if;
                         
 END//
