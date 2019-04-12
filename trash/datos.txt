@@ -1,0 +1,23 @@
+Gasto mensual
+ -Nombre
+ -Meses pagados
+ -Meses totales
+ -Cantidad totale
+ -Fecha a pagar
+ -Cantidad
+ -Estatus
+ -Editar
+
+Gastos fin de mes
+ -Nombre
+ -Fecha a pagar
+ -Cantidad
+ -Estatus
+ -Editar
+
+Gasto diario 
+ -Nombre
+ -Fecha
+ -Cantidad
+ -Estatus
+ -Editar

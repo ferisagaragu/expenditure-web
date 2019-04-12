@@ -1,0 +1,1 @@
+var server = 'http://localhost/expenditure-web/res';
