@@ -1,0 +1,311 @@
+<!doctype html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+        <link rel="stylesheet" href="../../css/bootstrap.min.css">
+        <link rel="stylesheet" href="../../css/jquery-ui.css">
+        <link rel="stylesheet" href="home.css">
+
+        <title>Expenditure</title>
+    </head>
+
+    <body>
+
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <label class="navbar-brand" href="#">Expenditure</label>
+  
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                          <a class="nav-link" href="../../page/resumen/view.html">Resumen</a>
+                        </li>
+                        <li class="nav-item active">
+                          <a class="nav-link" href="../../page/home/view.html">Registro de gastos</a>
+                        </li>
+                    </ul>
+
+                    <div class="form-inline my-2 my-lg-0">
+                        <button class="btn btn-outline-success my-2 my-sm-0" >Cerrar sesión</button>
+                    </div>
+
+                </div>
+
+            </nav>
+        </header>
+
+        <br><br><br><br>
+
+        <div class="col-md-12">
+            <div class="row">
+                <div class="nav flex-column nav-pills col-md-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#tab1" role="tab" aria-controls="tab1" aria-selected="true">Gastos perpetuos <label id="badge1" class="badge">0</label></a>
+                    <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">Gastos mensual <label id="badge2" class="badge">0</label></a>
+                    <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Gastos fin de mes <label id="badge3" class="badge">0</label></a>
+                    <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#tab4" role="tab" aria-controls="tab4" aria-selected="false">Gastos diarios <label id="badge4" class="badge">0</label>  <label id="badge5" class="badge">0</label></a>
+                    <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Dinero prestado</a>
+                    <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Targeta prestada</a>
+                </div>
+
+                <div class="tab-content col-md-9" id="v-pills-tabContent">
+
+                    <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1">
+
+                        <div id="monthPerpetualExpendituresMessage"></div>
+
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col" class="text-center">Fecha a pagar</th>
+                                    <th scope="col" class="text-center">Cantidad</th>
+                                    <th scope="col" class="text-center">Estatus</th>
+                                    <th scope="col" class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="monthPerpetualExpenditures"></tbody>
+    
+                            <tbody id="monthPerpetualExpendituresTotal">
+                                <tr>
+                                    <th scope="col">Total</th>
+                                    <td></th>
+                                    <td class="text-center" id="totalMonthPerpetualExpenditures">0.0 MNX</th>
+                                    <td class="text-center" id="totalMonthPerpetualExpendituresPayed"> 0.0 MNX</th>
+                                    <td class="text-center"><button class="btn btn-success" onclick="showPerpetualModal(0,1)">Nuevo</button></th>
+                                </tr>
+    
+                                <tr>
+                                    <th scope="col">Por quincena</th>
+                                    <td></th>
+                                    <td class="text-center" id="totalDividedMonthPerpetualExpenditures">0.0 MNX</th>
+                                    <td></td>
+                                    <td></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div id="monthPerpetualExpendituresNoInfo" class="col-md-9 text-center">
+                            No hay datos para mostrar crea un <a href="#" onclick="showPerpetualModal(0,1)">nuevo Gasto Perpetuo</a>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="perpetualModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 id="perpetualModalTitle" class="modal-title" id="exampleModalLabel"></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        
+                                        <div id="modalPerpetualNameHint" class="error-hint" hidden>El campo nombre no puede ser vacio.</div>
+                                        <input id="modalPerpetualName" type="text" class="form-control" placeholder="Nombre del gasto"/><br>
+                                        
+                                        <div id="modalPerpetualDateHint" class="error-hint" hidden>El campo fecha no puede ser vacio.</div>
+                                        <input id="modalPerpetualDate" type="text" class="form-control" placeholder="Fecha de pago"/><br>
+                                        
+                                        <div id="modalPerpetualCostHint" class="error-hint" hidden>El campo costo no puede ser vacio.</div>
+                                        <input id="modalPerpetualCost" type="text" class="form-control floatFilter" placeholder="Cantidad a pagar"/><br>
+
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button id="saveBtnPerpetualModal" type="button" class="btn btn-info"  onclick="onclickPerpetualModal()">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="perpetualModalErase" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                            <div class="modal-dialog modal-sm">
+                                <div class="modal-content">
+        
+                                    <div class="modal-body">
+                                        <h5>Eliminar registro</h5>
+                                        ¿ Estas seguro de que deseas eliminar el registro ?
+                                    </div>
+        
+                                    <div class="modal-footer">
+                                        <button id="saveBtnPerpetualModal" type="button" class="btn btn-info" onclick="onclickperpetualModalErase()">Aceptar</button>
+                                        <button id="saveBtnPerpetualModal" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--========================================================================-->
+
+                    </div>
+
+
+
+                    <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+
+                        <div id="monthExpendituresMessage"></div>
+
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col" class="text-center">Meses pagados</th>
+                                    <th scope="col" class="text-center">Meses totales</th>
+                                    <th scope="col" class="text-center">Cantidad total</th>
+                                    <th scope="col" class="text-center">Fecha a pagar</th>
+                                    <th scope="col" class="text-center">Cantidad</th>
+                                    <th scope="col" class="text-center">Estatus</th>
+                                    <th scope="col" class="text-center">Editar</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="monthExpenditures"></tbody>
+    
+                            <tbody id="monthExpendituresTotal">
+                                <tr>
+                                    <th scope="col">Total</th>
+                                    <td></th>
+                                    <td></th>
+                                    <td></th>
+                                    <td></th>    
+                                    <td class="text-center" id="totalMonthExpenditures">0.0 MNX</th>
+                                    <td class="text-center" id="totalMonthExpendituresPayed"> 0.0 MNX</th>
+                                    <td class="text-center"><button class="btn btn-success" onclick="">Nuevo</button></th>
+                                </tr>
+    
+                                <tr>
+                                    <th scope="col">Por quincena</th>
+                                    <td></th>
+                                    <td></th>
+                                    <td></th>
+                                    <td></th>
+                                    <td class="text-center" id="totalDividedMonthExpenditures">0.0 MNX</th>
+                                    <td></td>
+                                    <td></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div id="monthExpendituresNoInfo" class="col-md-9 text-center">
+                            No hay datos para mostrar crea un <a href="#" onclick="">nuevo Gasto mensual</a>
+                        </div>
+
+                    
+                    </div>
+
+
+
+                    <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3">
+                            
+                    </div>
+
+
+
+                    <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+                        
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Primer Quincena</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Segunda Quincena</a>
+                            </li>
+                        </ul>
+                                  
+                        <div class="tab-content" id="myTabContent">
+                                    
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                
+                                <div id="dayExpendituresMessage1"></div>
+
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col" class="text-center">Fecha del gasto</th>
+                                            <th scope="col" class="text-center">Cantidad</th>
+                                            <th scope="col" class="text-center">Acciones</th>
+                                        </tr>
+                                    </thead>
+        
+                                    <tbody id="dayExpenditures1"></tbody>
+            
+                                    <tbody id="dayExpendituresTotal1">
+                                        <tr>
+                                            <th scope="col">Total</th>
+                                            <th></th>
+                                            <td class="text-center" id="totalDayExpenditures1">0.0 MNX</th>
+                                            <td class="text-center"><button class="btn btn-success" onclick="">Nuevo</button></th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <div id="dayExpendituresNoInfo1" class="col-md-9 text-center">
+                                    No hay datos para mostrar crea un <a href="#" onclick="showPerpetualModal(0,1)">nuevo Gasto diario</a>
+                                </div>
+
+                            </div>
+                                    
+
+
+                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                
+                                <div id="dayExpendituresMessage2"></div>
+
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col" class="text-center">Fecha del gasto</th>
+                                            <th scope="col" class="text-center">Cantidad</th>
+                                            <th scope="col" class="text-center">Acciones</th>
+                                        </tr>
+                                    </thead>
+        
+                                    <tbody id="dayExpenditures2"></tbody>
+            
+                                    <tbody id="dayExpendituresTotal2">
+                                        <tr>
+                                            <th scope="col">Total</th>
+                                            <th></th>
+                                            <td class="text-center" id="totalDayExpenditures2">0.0 MNX</th>
+                                            <td class="text-center"><button class="btn btn-success" onclick="">Nuevo</button></th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <div id="dayExpendituresNoInfo2" class="col-md-9 text-center">
+                                    No hay datos para mostrar crea un <a href="#" onclick="showPerpetualModal(0,1)">nuevo Gasto diario</a>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                    </div>  
+
+                </div>
+            </div>
+        </div>
+          
+        <script src="../../js/jquery.min.js"></script>
+        <script src="../../js/jquery-ui.js"></script>
+        <script src="../../js/popper.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../context.js"></script>
+        <script src="../../js/util.js"></script>
+        <script defer src="https://use.fontawesome.com/releases/v5.8.1/js/all.js" integrity="sha384-g5uSoOSBd7KkhAMlnQILrecXvzst9TdC09/VM+pjDTCM+1il8RHz5fKANTFFb+gQ" crossorigin="anonymous"></script>
+
+        <script src="perpetual-expenditures.js"></script> 
+        <script src="month-expenditures.js"></script>
+        
+        <script src="day-expenditures.js"></script>
+        
+    </body>
+</html>

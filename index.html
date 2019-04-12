@@ -1,11 +1,42 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    Hellow world
-</body>
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+        <link rel="icon" href="Favicon.png">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/login.css">
+
+        <title>Expenditure</title>
+    </head>
+    <body>
+        
+        <div class="wrapper fadeInDown">
+            <div id="formContent">
+
+              <div class="fadeIn first">
+                <img src="https://blacklabelagency.com/wp-content/uploads/2017/08/money-icon.png" id="icon" alt="User Icon" />
+              </div>
+          
+              <div>
+                <input id="userNameTxt" type="text" class="fadeIn second" name="login" placeholder="Nombre de usuario o correo">
+                <input id="passwordTxt" type="text" class="fadeIn third" name="login" placeholder="Contraseña">
+                <input id="loginBtn" type="button" class="fadeIn fourth" value="Ingresar">
+              </div>
+
+              <div id="formFooter">
+                <a class="underlineHover" href="#">No tengo un usuario</a>
+              </div>
+          
+            </div>
+        </div>
+          
+        <script src="js/jquery.min.js"></script>
+        <script src="js/popper.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/index.js"></script>
+        
+    </body>
 </html>

@@ -1,0 +1,165 @@
+
+
+
+
+
+
+
+
+
+
+function getMonthExpenditures(id, period) {
+
+    $.ajax({
+        async: false,
+        type: 'post',
+        url: 'http://localhost/expenditure-web/res/expenditure/getMonthExpenditures.php',
+        data: {'monthId': id, 'period':period},
+        success: function (data) {
+            var resp = JSON.parse(data);
+            var out = '';
+            var total = 0;
+            var totalPayed = 0;
+            
+            console.log(resp);
+
+            if (resp.length === 0) {
+                out +=  '<tr>' +
+                            '<td>No hay gastos registrados este mes</td>' +
+                        '</tr>';
+            }
+
+            for (var i = 0; i < resp.length; i++) {
+                out += '<tr>' +
+                            '<td>' + toUft8(resp[i].expenditureName) + '</td>' +
+                            '<td style="text-align: center;">' + resp[i].monthPayed+'</th>' +
+                            '<td style="text-align: center;">' + resp[i].monthPay +'</th>' +
+                            '<td style="text-align: center;">' + formatMoney(Math.round(resp[i].expenditure)) +'</td>' +
+                            '<td style="text-align: center; width: 125px;">' + resp[i].expenditureDate + '</td>' +
+                            '<td style="text-align: center;">' + formatMoney(Math.round(resp[i].expenditureMonth)) +' MNX</td>';
+
+                if (resp[i].isPayed == '1') {
+                    out +=  '<td style="text-align: center;">' + 
+                                '<div class="custom-control form-control-lg custom-checkbox">' +
+                                    '<input type="checkbox" class="custom-control-input" id="customCheck1">' +
+                                    '<label class="custom-control-label" for="customCheck1"></label>'
+                                '</div>'
+
+                                '<input style="width: 30px; height: 30px;" type="checkbox" class="form-check-input" id="monthExpendituresCheck' + i + '" data="' + i + '" checked></input>' 
+                           +'</td>';
+                    totalPayed += parseFloat(resp[i].expenditureMonth);
+                } else {
+                    out +=  '<td style="text-align: center;">' + '<input style="width: 30px; height: 30px;" type="checkbox" class="form-check-input" id="monthExpendituresCheck' + i + '" data="' + i + '"></input>' +'</td>';
+                }
+
+                out += '<td style="text-align: center;"><button class="btn btn-info" href="#"><i class="far fa-edit"/></button></td>' + 
+                       '</tr>';
+
+                total += Math.round(resp[i].expenditureMonth);
+            }
+
+            $('#monthExpenditures').html(out);
+            $('#totalMonthExpenditures').text(formatMoney(Math.round(total)) + ' MNX');
+            $('#totalMonthExpendituresPayed').text(formatMoney(Math.round(total - totalPayed)) + ' MNX');
+            $('#totalDividedMonthExpenditures').text(formatMoney((Math.round(total) / 2)) + ' MNX');
+            $('#badge2').text(formatMoney(Math.round(total)));
+            moneyBars(12000, total);
+        }
+    });
+    
+}
+
+function getUnicMonthExpenditures(id, period) {
+    $.ajax({
+        async: false,
+        type: 'post',
+        url: 'http://localhost/expenditure-web/res/expenditure/getUnicMonthExpenditures.php',
+        data: {'monthId': id, 'period':period},
+        success: function (data) {
+            var resp = JSON.parse(data);
+            var out = '';
+            var total = 0;
+            var totalPayed = 0;
+            
+            console.log(resp);
+
+            if (resp.length === 0) {
+                out +=  '<tr>' +
+                            '<td>No hay gastos registrados este mes</td>' +
+                        '</tr>';
+            }
+
+            for (var i = 0; i < resp.length; i++) {
+                out += '<tr>' +
+                            '<td>' + toUft8(resp[i].expenditureName) + '</td>' +
+                            '<td>' + resp[i].expenditureDate + '</td>' +
+                            '<td>' + formatMoney(Math.round(resp[i].expenditureMonth)) +' MNX</td>';
+
+                if (resp[i].isPayed == '1') {
+                    out +=  '<td style="text-align: center;">' + '<input type="checkbox" class="form-check-input" id="monthExpendituresCheck' + i + '" data="' + i + '" checked></input>' +'</td>';
+                    totalPayed += parseFloat(resp[i].expenditureMonth);
+                } else {
+                    out +=  '<td style="text-align: center;">' + '<input type="checkbox" class="form-check-input" id="monthExpendituresCheck' + i + '" data="' + i + '"></input>' +'</td>';
+                }
+
+                out += '<td><button class="btn btn-info" href="#"><i class="far fa-edit"/></button></td>' + 
+                       '</tr>';
+
+                total += Math.round(resp[i].expenditureMonth);
+            }
+
+            $('#monthUnicExpenditures').html(out);
+            $('#totalMonthUnicExpenditures').text(formatMoney(Math.round(total)) + ' MNX');
+            $('#totalMonthUnicExpendituresPayed').text(formatMoney(Math.round(total - totalPayed)) + ' MNX');
+            $('#totalDividedMonthUnicExpenditures').text(formatMoney((Math.round(total) / 2)) + ' MNX');
+            $('#badge3').text(formatMoney(Math.round(total)));
+            moneyBars(12000, total);
+        }
+    });
+}
+
+function getDayExpenditures(id,period) {
+
+    $.ajax({
+        async: false,
+        type: 'post',
+        url: 'http://localhost/expenditure-web/res/expenditure/getDayExpenditures.php',
+        data: {'monthId': id, 'period':period},
+        success: function (data) {
+            var resp = JSON.parse(data);
+            var out = '';
+            var total = 0;
+
+            if (resp.length === 0) {
+                out +=  '<tr>' +
+                            '<td>No hay gastos registrados este mes</td>' +
+                        '</tr>';
+            }
+
+            for (var i = 0; i < resp.length; i++) {
+                out += '<tr>' +
+                            '<td>' + toUft8(resp[i].expenditureName) + '</td>' +
+                            '<td>' + resp[i].expenditureDate + '</td>' +
+                            '<td>' + formatMoney(resp[i].expenditureMonth) +' MNX</td>';
+
+                if (resp[i].isPayed == '1') {
+                    out +=  '<td style="text-align: center;">' + '<input type="checkbox" class="form-check-input" id="monthExpendituresCheck' + i + '" data="' + i + '" checked></input>' +'</td>';
+                    totalPayed += parseFloat(resp[i].expenditureMonth);
+                } else {
+                    out +=    '<td style="text-align: center;">' + '<input type="checkbox" class="form-check-input" id="monthExpendituresCheck' + i + '" data="' + i + '"></input>' +'</td>';
+                }
+
+                out += '<td><button class="btn btn-info" href="#"><i class="far fa-edit"/></button></td>' + 
+                       '</tr>';
+
+                total += parseFloat(resp[i].expenditureMonth);
+            }
+
+            $('#dayExpenditures1').html(out);
+            $('#totalDayExpenditures1').text(formatMoney(Math.round(total)) + ' MNX');
+            $('#badge4').text(formatMoney(Math.round(total)));
+            moneyBarsLess(12000,total,1);
+        }
+    });
+
+}
